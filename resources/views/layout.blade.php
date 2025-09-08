@@ -1,39 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Laravel App')</title>
-      <script src="https://cdn.tailwindcss.com"></script>
-    @vite('resources/css/app.css') <!-- Make sure Tailwind builds this -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@yield('title','Laravel App')</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  @vite('resources/css/app.css')
+
+  <!-- Select2 -->
+  <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+  <style>
+    /* let hover temporarily expand collapsed sidebar */
+    #sidebar.collapsed:hover {
+      width: 16rem;
+    }
+    #sidebar.collapsed:hover .sidebar-label {
+      display: inline;
+    }
+    #sidebar.collapsed:hover ~ #mainContent {
+      margin-left: 16rem;
+    }
+  </style>
 </head>
 <body class="bg-gray-100">
 
-    <!-- Navbar -->
-    <nav class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center shadow-md fixed w-full top-0 z-50">
-        <a href="{{ route('employees.index') }}" class="text-lg font-semibold">Accounting Management System</a>
-        <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="hover:underline">Logout</button>
-        </form>
-    </nav>
+<!-- NAVBAR -->
+<nav class="bg-blue-600 text-white px-6 py-4 flex justify-between items-center shadow-md fixed w-full top-0 z-50">
+  <div class="flex items-center space-x-4">
+    <!-- Hamburger -->
+    <button id="sidebarToggle" class="p-2 hover:bg-blue-500 rounded">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+      </svg>
+    </button>
+    <a href="{{ route('employees.index') }}" class="text-lg font-semibold">Accounting Management System</a>
+  </div>
+  <form action="{{ route('logout') }}" method="POST">@csrf
+    <button type="submit" class="hover:underline">Logout</button>
+  </form>
+</nav>
 
-    <!-- Sidebar -->
-    <nav class="bg-white border-r w-64 h-screen fixed top-16 left-0 p-6 shadow">
-        <ul class="space-y-3">
-            <li><a href="#" class="block text-gray-700 hover:text-blue-600">Dashboard</a></li>
-            <li><a href="{{ route('employees.index') }}" class="block text-gray-700 hover:text-blue-600">Employees Lists</a></li>
-            <li><a href="{{ route('user.index') }}" class="block text-gray-700 hover:text-blue-600">Users Accounts Lists</a></li>
-            <li><a href="#" class="block text-gray-700 hover:text-blue-600">Disbursement Voucher</a></li>
-            <li><a href="#" class="block text-gray-700 hover:text-blue-600">Reports</a></li>
-            <li><a href="#" class="block text-gray-700 hover:text-blue-600">Settings</a></li>
-        </ul>
-    </nav>
+<!-- SIDEBAR (starts collapsed) -->
+<nav id="sidebar"
+     class="bg-white border-r h-screen fixed top-16 left-0 p-4 shadow transition-all duration-300 collapsed w-16">
+  <ul class="space-y-3">
 
-    <!-- Main Content -->
-    <main class="ml-64 mt-16 p-6">
-        @yield('content')
-    </main>
+    <!-- Dashboard -->
+    <li>
+      <a href="#" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m-4 0h8"/>
+        </svg>
+        <span class="sidebar-label hidden">Dashboard</span>
+      </a>
+    </li>
 
+    <!-- Employees -->
+    <li>
+      <a href="{{ route('employees.index') }}" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M5.121 17.804A4 4 0 017 17h10a4 4 0 011.879.804M15 11a3 3 0 10-6 0 3 3 0 006 0z"/>
+        </svg>
+        <span class="sidebar-label hidden">Employees</span>
+      </a>
+    </li>
+
+    <!-- Users -->
+    <li>
+      <a href="{{ route('user.index') }}" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke="currentColor" class="h-5 w-5 flex-shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 20h5v-2a4 4 0 00-3-3.87M9 20h6M3 4a1 1 0 011-1h16a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V4z"/>
+        </svg>
+        <span class="sidebar-label hidden">Users</span>
+      </a>
+    </li>
+
+    <!-- Disbursements -->
+    <li>
+      <a href="{{ route('disbursements.index') }}" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span class="sidebar-label hidden">Disbursements</span>
+      </a>
+    </li>
+
+    <!-- Journal Books -->
+    <li>
+      <a href="#" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+             stroke-width="1.5" stroke="currentColor" class="h-5 w-5 flex-shrink-0">
+          <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25
+                   A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292
+                   m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25
+                   A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292
+                   m0-14.25v14.25" />
+        </svg>
+        <span class="sidebar-label hidden">Journal Books</span>
+      </a>
+    </li>
+
+  </ul>
+</nav>
+
+<!-- MAIN -->
+<main id="mainContent" class="mt-16 ml-16 p-6 transition-all duration-300">
+  @yield('content')
+</main>
+
+<script>
+  const toggle = document.getElementById('sidebarToggle');
+  const sidebar = document.getElementById('sidebar');
+  const main = document.getElementById('mainContent');
+
+  // restore previous state
+  if (localStorage.getItem('sidebar-collapsed') === 'false') {
+    sidebar.classList.remove('collapsed', 'w-16');
+    sidebar.classList.add('w-64');
+    main.classList.remove('ml-16');
+    main.classList.add('ml-64');
+    document.querySelectorAll('.sidebar-label').forEach(el => el.classList.remove('hidden'));
+  }
+
+  toggle.addEventListener('click', () => {
+    const isCollapsed = sidebar.classList.contains('collapsed');
+
+    if (isCollapsed) {
+      // expand
+      sidebar.classList.remove('collapsed', 'w-16');
+      sidebar.classList.add('w-64');
+      main.classList.remove('ml-16');
+      main.classList.add('ml-64');
+      document.querySelectorAll('.sidebar-label').forEach(el => el.classList.remove('hidden'));
+      localStorage.setItem('sidebar-collapsed', 'false');
+    } else {
+      // collapse
+      sidebar.classList.add('collapsed');
+      sidebar.classList.remove('w-64');
+      sidebar.classList.add('w-16');
+      main.classList.remove('ml-64');
+      main.classList.add('ml-16');
+      document.querySelectorAll('.sidebar-label').forEach(el => el.classList.add('hidden'));
+      localStorage.setItem('sidebar-collapsed', 'true');
+    }
+  });
+
+  // init select2
+  $(function() {
+    $('.js-account-select').select2({
+      placeholder: "Search account code...",
+      allowClear: true
+    });
+  });
+</script>
 </body>
 </html>
