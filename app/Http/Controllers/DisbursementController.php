@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\DisbursementHeader;
 use App\Models\DisbursementDetail;
 use App\Models\AccountCode; // Assuming you have an AccountCode model
+use App\Models\Bmso\ObligationRequest;
 use Illuminate\Support\Facades\DB;
 
 
@@ -99,5 +100,16 @@ class DisbursementController extends Controller
         $header->delete();
 
         return redirect()->route('disbursements.index')->with('success', 'Disbursement deleted!');
+    }
+    public function createFromObr($obrId)
+    {
+        // Grab OBR with entries
+        $obr = ObligationRequest::with('entries')->findOrFail($obrId);
+        $accountCodes = \App\Models\AccountCode::all();
+
+        return view('disbursements.create', [
+            'obr' => $obr,
+            'accountCodes' => $accountCodes
+        ]);
     }
 }

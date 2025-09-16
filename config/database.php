@@ -43,6 +43,20 @@ return [
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
 
+        'bmso' => [
+        'driver' => env('BMSO_DB_CONNECTION', 'mysql'),
+        'host' => env('BMSO_DB_HOST', '127.0.0.1'),
+        'port' => env('BMSO_DB_PORT', '3306'),
+        'database' => env('BMSO_DB_DATABASE', 'forge'),
+        'username' => env('BMSO_DB_USERNAME', 'forge'),
+        'password' => env('BMSO_DB_PASSWORD', ''),
+        'charset' => 'utf8mb4',
+        'collation' => 'utf8mb4_unicode_ci',
+        'prefix' => '',
+        'strict' => true,
+        'engine' => null,
+        ],
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
