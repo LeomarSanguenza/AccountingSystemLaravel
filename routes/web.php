@@ -8,6 +8,8 @@ use App\Http\Controllers\PartSumsController;
 use App\Http\Controllers\BottleCollectorController;
 use App\Http\Controllers\DisbursementController;
 use App\Http\Controllers\ObligationRequestController;
+use App\Http\Controllers\RoleController;
+
 
 
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
@@ -19,6 +21,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/user', [UserController::class, 'index'])->name('user.index');
     Route::resource('users', UserController::class)->except(['index']);
 
+    Route::resource('roles', RoleController::class);
     Route::resource('disbursements', DisbursementController::class);
 
     Route::get('/obligations', [ObligationRequestController::class, 'index'])->name('obligations.index');
