@@ -34,13 +34,13 @@
                     <td class="border px-3 py-2">{{ $req->quarter }}</td>
                     <td class="border px-3 py-2 truncate max-w-xs">{{ Str::limit($req->particulars, 50) }}</td>
                     <td class="border px-3 py-2">{{ $req->created_at }}</td>
-                    <td class="border px-3 py-2 text-center">
+                    <td class="border px-3 py-2 text-center" style="min-width: 200px;">
                         <a href="{{ route('obligations.show', $req->id) }}" 
                            class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">View
                         </a>
                         <a href="{{ route('disbursements.createFromObr', $req->id) }}" 
                             class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600">
-                            Make Disbursement
+                            Make Dv
                         </a>
                     </td>
                 </tr>

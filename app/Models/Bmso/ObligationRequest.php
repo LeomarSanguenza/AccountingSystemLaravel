@@ -14,5 +14,10 @@ class ObligationRequest extends Model
     {
         return $this->hasMany(ObligationEntry::class, 'obr_id', 'id');
     }
+    public function fundType()
+    {
+        return $this->belongsTo(FundType::class, 'fund_type_id', 'id');
+    }
+
 }
 

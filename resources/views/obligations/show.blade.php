@@ -16,7 +16,7 @@
         </div>
         <div>
             <p><strong>Payee:</strong> {{ $request->payee_id }}</p> {{-- Replace with payee name if joined --}}
-            <p><strong>Fund Type:</strong> {{ $request->fund_type_id }}</p> {{-- Replace with fund type name if joined --}}
+            <p><strong>Fund Type:</strong> {{ $request->fundtype->fund_code }}</p>
             <p><strong>Department:</strong> {{ $request->dep_id }}</p> {{-- Replace with relation if you want --}}
             <p><strong>Handler:</strong> {{ $request->handler_id }}</p>
         </div>
@@ -74,6 +74,5 @@
         Make Disbursement
         </a>
     </div>
-
 </div>
 @endsection
