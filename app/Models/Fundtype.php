@@ -21,4 +21,8 @@ class FundType extends Model
 
     // If you don’t have created_at/updated_at
     public $timestamps = false;
+     public function users()
+    {
+        return $this->hasMany(User::class, 'fund_type', 'id');
+    }
 }
