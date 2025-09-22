@@ -9,6 +9,8 @@ use App\Http\Controllers\BottleCollectorController;
 use App\Http\Controllers\DisbursementController;
 use App\Http\Controllers\ObligationRequestController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\FundTypeController;
+
 
 
 
@@ -22,6 +24,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class)->except(['index']);
 
     Route::resource('roles', RoleController::class);
+
+    Route::resource('fundtypes', FundTypeController::class);
     Route::resource('disbursements', DisbursementController::class);
 
     Route::get('/obligations', [ObligationRequestController::class, 'index'])->name('obligations.index');

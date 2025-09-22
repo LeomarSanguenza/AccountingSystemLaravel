@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Employee;
+use App\Models\FundType;
 
 class UserController extends Controller
 {
@@ -18,12 +19,13 @@ class UserController extends Controller
 
     public function create(Request $request) {
         $employee = null;
-    
+        $fundtypes = FundType::all();
+
         if ($request->filled('EmpID')) {
             $employee = Employee::find($request->EmpID);
         }
     
-        return view('user.create', compact('employee'));
+        return view('user.create', compact('employee', 'fundtypes'));
     }
     
  
@@ -35,7 +37,8 @@ class UserController extends Controller
             'Password' => 'required|string|min:6',
             'UserRole' => 'required|in:Admin,SystemController,Employee',
             'EmpID' => 'nullable|exists:employees,EmpID', // EmpID is optional
-        ]);
+            'fund_type' => 'required|exists:fundtypes,id', // ✅ use fund_type       
+            ]);
     
         // Check if EmpID is provided
         if ($request->filled('EmpID')) {
@@ -62,6 +65,7 @@ class UserController extends Controller
             'Username' => $request->Username,
             'Password' => Hash::make($request->Password),
             'UserRole' => $request->UserRole,
+            'fund_type' => $request->fund_type,
         ]);
     
         return redirect()->route('user.index')->with('success', 'User created successfully!');
@@ -71,7 +75,8 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('User.edit', compact('user'));
+        $fundtypes = FundType::all();
+        return view('User.edit', compact('user', 'fundtypes'));
     }
 
     public function update(Request $request, $id)

@@ -19,6 +19,7 @@ class User extends Authenticatable {
         'Username',
         'Password',
         'UserRole',
+        'fund_type'
     ];
 
     protected $hidden = [
@@ -34,5 +35,11 @@ class User extends Authenticatable {
     public function getAuthPassword()
     {
         return $this->Password;
+    }
+    public function fundtype()
+    {
+        return $this->belongsTo(FundType::class, 'fund_type', 'id'); 
+        // 'fund_type' = column in users
+        // 'id' = PK in fundtypes
     }
 }

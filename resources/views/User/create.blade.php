@@ -35,7 +35,8 @@
                    required>
         </div>
 
-        <div>
+      <div class="flex space-x-4">
+        <div class="w-1/2">
             <label for="UserRole" class="block text-sm font-medium text-gray-700">User Role</label>
             <select name="UserRole" id="UserRole" 
                     class="mt-1 block w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
@@ -44,6 +45,20 @@
                 <option value="Employee">Employee</option>
             </select>
         </div>
+
+        <div class="w-1/2">
+            <label for="fund_type" class="block text-sm font-medium text-gray-700">Fund Type</label>
+                <select name="fund_type" id="fund_type" 
+                        class="mt-1 block w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
+                        required>
+                    <option value="">-- Select Fund Type --</option>
+                    @foreach($fundtypes as $fund)
+                        <option value="{{ $fund->id }}">{{ $fund->description }}</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+
 
         <div>
             <button type="submit" 
