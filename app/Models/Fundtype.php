@@ -23,6 +23,6 @@ class FundType extends Model
     public $timestamps = false;
      public function users()
     {
-        return $this->hasMany(User::class, 'fund_type', 'id');
+        return $this->hasMany(User::class, 'fundtype', 'id');
     }
 }

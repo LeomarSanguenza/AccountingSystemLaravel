@@ -12,6 +12,7 @@ class User extends Authenticatable {
 
     protected $table = 'Users';
     protected $primaryKey = 'UserID';
+    protected $with = ['fundTypeRelation'];
 
     protected $fillable = [
         'FirstName',
@@ -36,10 +37,16 @@ class User extends Authenticatable {
     {
         return $this->Password;
     }
-    public function fundtype()
+    // public function fundtype()
+    // {
+    //     return $this->belongsTo(FundType::class, 'fundtype', 'id'); 
+
+    // }   
+    // User.php
+    public function fundTypeRelation()
     {
-        return $this->belongsTo(FundType::class, 'fund_type', 'id'); 
-        // 'fund_type' = column in users
-        // 'id' = PK in fundtypes
+        return $this->belongsTo(FundType::class, 'fundtype', 'id');
     }
+
+
 }
