@@ -27,6 +27,10 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('fundtypes', FundTypeController::class);
     Route::resource('disbursements', DisbursementController::class);
+    
+    Route::get('/users/{id}/fundtype', [UserController::class, 'editFundType'])->name('users.editFundType');
+    Route::put('/users/{id}/fundtype', [UserController::class, 'updateFundType'])->name('users.updateFundType');
+
 
     Route::get('/obligations', [ObligationRequestController::class, 'index'])->name('obligations.index');
     Route::get('/obligations/{id}', [ObligationRequestController::class, 'show'])->name('obligations.show');

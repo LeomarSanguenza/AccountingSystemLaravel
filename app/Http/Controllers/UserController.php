@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Employee;
 use App\Models\FundType;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -139,33 +140,55 @@ class UserController extends Controller
     }
     
     public function makeAccount(Request $request, $id)
-{
-    // Find the employee
-    $employee = Employee::findOrFail($id);
+    {
+        // Find the employee
+        $employee = Employee::findOrFail($id);
 
-    // Validate the request
-    $request->validate([
-        'FirstName' => 'required|string|max:100',
-        'LastName' => 'required|string|max:100',
-        'Username' => 'required|string|max:100|unique:users,Username',
-        'Password' => 'required|string|min:6',
-        'UserRole' => 'required|in:Admin,SystemController,Employee'
-    ]);
-    User::create([
-        'FirstName' => $request->FirstName,
-        'LastName' => $request->LastName,
-        'Username' => $request->Username,
-        'Password' => Hash::make($request->Password),
-        'UserRole' => $request->UserRole,
-    ]);
+        // Validate the request
+        $request->validate([
+            'FirstName' => 'required|string|max:100',
+            'LastName' => 'required|string|max:100',
+            'Username' => 'required|string|max:100|unique:users,Username',
+            'Password' => 'required|string|min:6',
+            'UserRole' => 'required|in:Admin,SystemController,Employee'
+        ]);
+        User::create([
+            'FirstName' => $request->FirstName,
+            'LastName' => $request->LastName,
+            'Username' => $request->Username,
+            'Password' => Hash::make($request->Password),
+            'UserRole' => $request->UserRole,
+        ]);
 
-    // Update the employee's Username
-    $employee->update([
-        'Username' => $request->Username,
-    ]);
+        // Update the employee's Username
+        $employee->update([
+            'Username' => $request->Username,
+        ]);
 
-    return redirect()->back()->with('success', 'User account created successfully.');
-}
+        return redirect()->back()->with('success', 'User account created successfully.');
+    }
+
+    public function editFundType($id)
+    {
+        $user = User::findOrFail($id);
+        $fundtypes = FundType::all();
+
+        return view('user.change-fundtype', compact('user', 'fundtypes'));
+    }
+
+    public function updateFundType(Request $request, $id)
+    {
+        $request->validate([
+            'fundtype' => 'required|exists:fundtypes,id',
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->fundtype = $request->fundtype;
+        $user->save();
+
+        return redirect()->route('user.index')->with('success', 'Fund type updated successfully!');
+    }
+
 }
 
 
