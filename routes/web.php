@@ -10,6 +10,7 @@ use App\Http\Controllers\DisbursementController;
 use App\Http\Controllers\ObligationRequestController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\FundTypeController;
+use App\Http\Controllers\TagController;
 
 
 
@@ -30,6 +31,8 @@ Route::middleware(['auth'])->group(function () {
     
     Route::get('/users/{id}/fundtype', [UserController::class, 'editFundType'])->name('users.editFundType');
     Route::put('/users/{id}/fundtype', [UserController::class, 'updateFundType'])->name('users.updateFundType');
+    // routes/web.php
+    Route::resource('tags', TagController::class);
 
 
     Route::get('/obligations', [ObligationRequestController::class, 'index'])->name('obligations.index');
