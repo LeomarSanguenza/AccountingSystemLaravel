@@ -11,6 +11,13 @@ use App\Http\Controllers\ObligationRequestController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\FundTypeController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\SubAccountController;
+use App\Http\Controllers\BankController;
+use App\Http\Controllers\BarangayController;
+use App\Http\Controllers\SignatoryController;
+use App\Http\Controllers\PayeeController;
+use App\Http\Controllers\OfficeController;
+use App\Http\Controllers\ExpenseTypeController;
 
 
 
@@ -33,6 +40,14 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/users/{id}/fundtype', [UserController::class, 'updateFundType'])->name('users.updateFundType');
     // routes/web.php
     Route::resource('tags', TagController::class);
+    Route::resource('subaccounts', SubAccountController::class);
+    Route::resource('banks', BankController::class);
+    Route::resource('barangays', BarangayController::class);
+    Route::resource('signatories', SignatoryController::class);
+    Route::resource('payees', PayeeController::class);
+    Route::resource('offices', OfficeController::class);
+    Route::resource('expense_types', ExpenseTypeController::class);
+
 
 
     Route::get('/obligations', [ObligationRequestController::class, 'index'])->name('obligations.index');
