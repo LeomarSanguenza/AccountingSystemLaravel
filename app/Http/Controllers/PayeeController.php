@@ -10,12 +10,12 @@ class PayeeController extends Controller
     public function index()
     {
         $payees = Payee::all();
-        return view('payees.index', compact('payees'));
+        return view('Tools/payees.index', compact('payees'));
     }
 
     public function create()
     {
-        return view('payees.create');
+        return view('Tools/payees.create');
     }
 
     public function store(Request $request)
@@ -26,12 +26,12 @@ class PayeeController extends Controller
 
         Payee::create($request->all());
 
-        return redirect()->route('payees.index')->with('success', 'Payee created successfully.');
+        return redirect()->route('Tools/payees.index')->with('success', 'Payee created successfully.');
     }
 
     public function edit(Payee $payee)
     {
-        return view('payees.edit', compact('payee'));
+        return view('Tools/payees.edit', compact('payee'));
     }
 
     public function update(Request $request, Payee $payee)
@@ -42,12 +42,12 @@ class PayeeController extends Controller
 
         $payee->update($request->all());
 
-        return redirect()->route('payees.index')->with('success', 'Payee updated successfully.');
+        return redirect()->route('Tools/payees.index')->with('success', 'Payee updated successfully.');
     }
 
     public function destroy(Payee $payee)
     {
         $payee->delete();
-        return redirect()->route('payees.index')->with('success', 'Payee deleted successfully.');
+        return redirect()->route('Tools/payees.index')->with('success', 'Payee deleted successfully.');
     }
 }

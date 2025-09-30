@@ -11,13 +11,13 @@ class SubAccountController extends Controller
     public function index()
     {
         $subAccounts = SubAccount::with('accountCode')->get();
-        return view('subaccounts.index', compact('subAccounts'));
+        return view('Tools/subaccounts.index', compact('subAccounts'));
     }
 
     public function create()
     {
         $accountCodes = AccountCode::all();
-        return view('subaccounts.create', compact('accountCodes'));
+        return view('Tools/subaccounts.create', compact('accountCodes'));
     }
 
     public function store(Request $request)
@@ -30,13 +30,13 @@ class SubAccountController extends Controller
 
         SubAccount::create($request->all());
 
-        return redirect()->route('subaccounts.index')->with('success', 'Sub Account created successfully.');
+        return redirect()->route('Tools/subaccounts.index')->with('success', 'Sub Account created successfully.');
     }
 
     public function edit(SubAccount $subaccount)
     {
         $accountCodes = AccountCode::all();
-        return view('subaccounts.edit', compact('subaccount', 'accountCodes'));
+        return view('Tools/subaccounts.edit', compact('subaccount', 'accountCodes'));
     }
 
     public function update(Request $request, SubAccount $subaccount)
@@ -49,12 +49,12 @@ class SubAccountController extends Controller
 
         $subaccount->update($request->all());
 
-        return redirect()->route('subaccounts.index')->with('success', 'Sub Account updated successfully.');
+        return redirect()->route('Tools/subaccounts.index')->with('success', 'Sub Account updated successfully.');
     }
 
     public function destroy(SubAccount $subaccount)
     {
         $subaccount->delete();
-        return redirect()->route('subaccounts.index')->with('success', 'Sub Account deleted successfully.');
+        return redirect()->route('Tools/subaccounts.index')->with('success', 'Sub Account deleted successfully.');
     }
 }

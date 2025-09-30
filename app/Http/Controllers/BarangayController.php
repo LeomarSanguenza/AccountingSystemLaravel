@@ -10,12 +10,12 @@ class BarangayController extends Controller
     public function index()
     {
         $barangays = Barangay::all();
-        return view('barangays.index', compact('barangays'));
+        return view('tools.barangays.index', compact('barangays'));
     }
 
     public function create()
     {
-        return view('barangays.create');
+        return view('tools.barangays.create');
     }
 
     public function store(Request $request)
@@ -27,12 +27,12 @@ class BarangayController extends Controller
 
         Barangay::create($request->all());
 
-        return redirect()->route('barangays.index')->with('success', 'Barangay created successfully.');
+        return redirect()->route('tools.barangays.index')->with('success', 'Barangay created successfully.');
     }
 
     public function edit(Barangay $barangay)
     {
-        return view('barangays.edit', compact('barangay'));
+        return view('tools.barangays.edit', compact('barangay'));
     }
 
     public function update(Request $request, Barangay $barangay)
@@ -44,12 +44,12 @@ class BarangayController extends Controller
 
         $barangay->update($request->all());
 
-        return redirect()->route('barangays.index')->with('success', 'Barangay updated successfully.');
+        return redirect()->route('tools.barangays.index')->with('success', 'Barangay updated successfully.');
     }
 
     public function destroy(Barangay $barangay)
     {
         $barangay->delete();
-        return redirect()->route('barangays.index')->with('success', 'Barangay deleted successfully.');
+        return redirect()->route('tools.barangays.index')->with('success', 'Barangay deleted successfully.');
     }
 }

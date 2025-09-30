@@ -10,12 +10,12 @@ class SignatoryController extends Controller
     public function index()
     {
         $signatories = Signatory::all();
-        return view('signatories.index', compact('signatories'));
+        return view('Tools/signatories.index', compact('signatories'));
     }
 
     public function create()
     {
-        return view('signatories.create');
+        return view('Tools/signatories.create');
     }
 
     public function store(Request $request)
@@ -29,12 +29,12 @@ class SignatoryController extends Controller
 
         Signatory::create($request->all());
 
-        return redirect()->route('signatories.index')->with('success', 'Signatory created successfully.');
+        return redirect()->route('Tools/signatories.index')->with('success', 'Signatory created successfully.');
     }
 
     public function edit(Signatory $signatory)
     {
-        return view('signatories.edit', compact('signatory'));
+        return view('Tools/signatories.edit', compact('signatory'));
     }
 
     public function update(Request $request, Signatory $signatory)
@@ -48,12 +48,12 @@ class SignatoryController extends Controller
 
         $signatory->update($request->all());
 
-        return redirect()->route('signatories.index')->with('success', 'Signatory updated successfully.');
+        return redirect()->route('Tools/signatories.index')->with('success', 'Signatory updated successfully.');
     }
 
     public function destroy(Signatory $signatory)
     {
         $signatory->delete();
-        return redirect()->route('signatories.index')->with('success', 'Signatory deleted successfully.');
+        return redirect()->route('Tools/signatories.index')->with('success', 'Signatory deleted successfully.');
     }
 }

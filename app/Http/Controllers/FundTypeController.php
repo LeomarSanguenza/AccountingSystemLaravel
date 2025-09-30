@@ -10,12 +10,12 @@ class FundTypeController extends Controller
     public function index()
     {
         $fundtypes = FundType::all();
-        return view('fundtypes.index', compact('fundtypes'));
+        return view('Tools/fundtypes.index', compact('fundtypes'));
     }
 
     public function create()
     {
-        return view('fundtypes.create');
+        return view('Tools/fundtypes.create');
     }
 
     public function store(Request $request)
@@ -28,18 +28,18 @@ class FundTypeController extends Controller
 
         FundType::create($request->all());
 
-        return redirect()->route('fundtypes.index')
+        return redirect()->route('Tools/fundtypes.index')
                          ->with('success', 'Fund Type created successfully.');
     }
 
     public function show(FundType $fundtype)
     {
-        return view('fundtypes.show', compact('fundtype'));
+        return view('Tools/fundtypes.show', compact('fundtype'));
     }
 
     public function edit(FundType $fundtype)
     {
-        return view('fundtypes.edit', compact('fundtype'));
+        return view('Tools/fundtypes.edit', compact('fundtype'));
     }
 
     public function update(Request $request, FundType $fundtype)
@@ -52,7 +52,7 @@ class FundTypeController extends Controller
 
         $fundtype->update($request->all());
 
-        return redirect()->route('fundtypes.index')
+        return redirect()->route('Tools/fundtypes.index')
                          ->with('success', 'Fund Type updated successfully.');
     }
 
@@ -60,7 +60,7 @@ class FundTypeController extends Controller
     {
         $fundtype->delete();
 
-        return redirect()->route('fundtypes.index')
+        return redirect()->route('Tools/fundtypes.index')
                          ->with('success', 'Fund Type deleted successfully.');
     }
 }

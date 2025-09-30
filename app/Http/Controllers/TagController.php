@@ -12,7 +12,7 @@ class TagController extends Controller
     public function index()
     {
         $tags = Tag::with('fundTypeRelation')->get();
-        return view('tags.index', compact('tags'));
+        return view('Tools/tags.index', compact('tags'));
     }
 
     public function create()
@@ -25,7 +25,7 @@ class TagController extends Controller
             'Debit Account Journal',
             'Cash Check Receipt Journal'
         ];
-        return view('tags.create', compact('fundtypes', 'journalTypes'));
+        return view('Tools/tags.create', compact('fundtypes', 'journalTypes'));
     }
 
     public function store(Request $request)
@@ -42,7 +42,7 @@ class TagController extends Controller
             'fundtype' => $request->fundtype // can be null for "All"
         ]);
 
-        return redirect()->route('tags.index')->with('success', 'Tag created successfully.');
+        return redirect()->route('tools.tags.index')->with('success', 'Tag created successfully.');
     }
 
     public function edit(Tag $tag)
@@ -55,7 +55,7 @@ class TagController extends Controller
             'Debit Account Journal',
             'Cash Check Receipt Journal'
         ];
-        return view('tags.edit', compact('tag', 'fundtypes', 'journalTypes'));
+        return view('tags.edit', compact('Tools/tag', 'fundtypes', 'journalTypes'));
     }
 
     public function update(Request $request, Tag $tag)
@@ -68,12 +68,12 @@ class TagController extends Controller
 
         $tag->update($request->all());
 
-        return redirect()->route('tags.index')->with('success', 'Tag updated successfully.');
+        return redirect()->route('Tools/tags.index')->with('success', 'Tag updated successfully.');
     }
 
     public function destroy(Tag $tag)
     {
         $tag->delete();
-        return redirect()->route('tags.index')->with('success', 'Tag deleted successfully.');
+        return redirect()->route('Tools/tags.index')->with('success', 'Tag deleted successfully.');
     }
 }

@@ -18,6 +18,7 @@ use App\Http\Controllers\SignatoryController;
 use App\Http\Controllers\PayeeController;
 use App\Http\Controllers\OfficeController;
 use App\Http\Controllers\ExpenseTypeController;
+use App\Http\Controllers\JournalController;
 
 
 
@@ -30,23 +31,29 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth'])->group(function () {
     Route::get('/user', [UserController::class, 'index'])->name('user.index');
     Route::resource('users', UserController::class)->except(['index']);
-
-    Route::resource('roles', RoleController::class);
-
-    Route::resource('fundtypes', FundTypeController::class);
     Route::resource('disbursements', DisbursementController::class);
     
     Route::get('/users/{id}/fundtype', [UserController::class, 'editFundType'])->name('users.editFundType');
     Route::put('/users/{id}/fundtype', [UserController::class, 'updateFundType'])->name('users.updateFundType');
     // routes/web.php
-    Route::resource('tags', TagController::class);
-    Route::resource('subaccounts', SubAccountController::class);
-    Route::resource('banks', BankController::class);
-    Route::resource('barangays', BarangayController::class);
-    Route::resource('signatories', SignatoryController::class);
-    Route::resource('payees', PayeeController::class);
-    Route::resource('offices', OfficeController::class);
-    Route::resource('expense_types', ExpenseTypeController::class);
+    Route::prefix('tools')->name('tools.')->group(function () {
+        Route::resource('roles', RoleController::class);
+        Route::resource('fundtypes', FundTypeController::class);
+        Route::resource('tags', TagController::class);
+        Route::resource('subaccounts', SubAccountController::class);
+        Route::resource('barangays', BarangayController::class);
+        Route::resource('banks', BankController::class);
+        Route::resource('payees', PayeeController::class);
+        Route::resource('signatories', SignatoryController::class);
+        Route::resource('offices', OfficeController::class);
+        Route::resource('expense_types', ExpenseTypeController::class);
+    });
+    Route::resource('journals', JournalController::class); 
+    Route::get('/tools', function () {
+    return view('tools.layout'); 
+    })->name('tools.index');
+
+
 
 
 
