@@ -10,12 +10,12 @@ class BankController extends Controller
     public function index()
     {
         $banks = Bank::all();
-        return view('banks.index', compact('banks'));
+        return view('tools/banks.index', compact('banks'));
     }
 
     public function create()
     {
-        return view('banks.create');
+        return view('tools/banks.create');
     }
 
     public function store(Request $request)
@@ -29,12 +29,12 @@ class BankController extends Controller
 
         Bank::create($request->all());
 
-        return redirect()->route('banks.index')->with('success', 'Bank created successfully.');
+        return redirect()->route('tools/banks.index')->with('success', 'Bank created successfully.');
     }
 
     public function edit(Bank $bank)
     {
-        return view('banks.edit', compact('bank'));
+        return view('tools/banks.edit', compact('bank'));
     }
 
     public function update(Request $request, Bank $bank)
@@ -48,12 +48,14 @@ class BankController extends Controller
 
         $bank->update($request->all());
 
-        return redirect()->route('banks.index')->with('success', 'Bank updated successfully.');
+        return redirect()->route('tools/banks.index')->with('success', 'Bank updated successfully.');
     }
 
+/*************  ✨ Windsurf Command ⭐  *************/
+/*******  03a20e1e-29c4-4be8-9092-59894662e602  *******/
     public function destroy(Bank $bank)
     {
         $bank->delete();
-        return redirect()->route('banks.index')->with('success', 'Bank deleted successfully.');
+        return redirect()->route('tools/banks.index')->with('success', 'Bank deleted successfully.');
     }
 }
