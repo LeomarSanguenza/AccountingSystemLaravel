@@ -103,7 +103,7 @@
     </li>
 
     <!-- Journal Books -->
-    <li>
+    {{-- <li>
       <a href="#" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
              stroke-width="1.5" stroke="currentColor" class="h-5 w-5 flex-shrink-0">
@@ -116,7 +116,7 @@
         </svg>
         <span class="sidebar-label hidden">Journals</span>
       </a>
-    </li>
+    </li> --}}
     <li>
       <a href="{{ route('obligations.index') }}" class="flex items-center space-x-3 text-gray-700 hover:text-blue-600">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
