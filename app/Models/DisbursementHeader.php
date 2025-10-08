@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Payee;
 
 class DisbursementHeader extends Model
 {
@@ -39,4 +40,21 @@ class DisbursementHeader extends Model
     {
         return $this->hasMany(DisbursementDetail::class, 'dv_hdr_id', 'dv_hdr_id');
     }
+    // App\Models\DisbursementHeader.php
+     public function payeeRecord()
+    {
+        return $this->belongsTo(Payee::class, 'payee', 'ref_id');
+    }
+
+    // accessor so you can use $hdr->payee_name in Blade
+    public function getPayeeNameAttribute()
+    {
+        // return related model payee_name if present, otherwise fallback to raw attribute or 'N/A'
+        return $this->payeeRecord?->payee_name ?? $this->attributes['payee'] ?? 'N/A';
+    }
+    public function statusRecord()
+    {
+        return $this->belongsTo(DisbStatus::class, 'status', 'id');
+    }
+
 }

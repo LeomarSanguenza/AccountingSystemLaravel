@@ -8,5 +8,6 @@ class Payee extends Model
 {
     protected $fillable = [
         'payee_name',
+        'ref_id',
     ];
 }

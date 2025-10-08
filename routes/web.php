@@ -53,6 +53,11 @@ Route::middleware(['auth'])->group(function () {
     return view('tools.layout'); 
     })->name('tools.index');
 
+//status routes
+Route::post('disbursements/{id}/approve', [DisbursementController::class, 'approve'])->name('disbursements.approve');
+Route::post('disbursements/{id}/process', [DisbursementController::class, 'process'])->name('disbursements.process');
+Route::post('disbursements/{id}/cancel', [DisbursementController::class, 'cancel'])->name('disbursements.cancel');
+Route::post('disbursements/{id}/reject', [DisbursementController::class, 'reject'])->name('disbursements.reject');
 
 
 

@@ -34,12 +34,33 @@
                     <input type="text" name="dv_number" class="w-full border rounded p-2">
                 </div>
 
-                <div class="col-span-2">
-                    <label class="block text-sm font-medium mb-1">Payee</label>
-                        <input type="text" name="payee" class="w-full border rounded p-2"
-                        value="{{ $obr->payee_id ?? '' }}">
+               {{-- Payee field --}}
+<div class="col-span-2">
+    <label class="block text-sm font-medium mb-1">Payee</label>
 
-                </div>
+    @if ($bmsoPayee) 
+        {{-- Case: From OBR, payee locked (readonly) --}}
+        <input type="text" class="w-full border rounded p-2 bg-gray-50"
+            value="{{ $accountingPayee?->payee_name ?? $bmsoPayee->name }}" readonly>
+
+        <input type="hidden" name="payee" value="{{ $accountingPayee?->id ?? '' }}">
+        <input type="hidden" name="bmso_payee_id" value="{{ $bmsoPayee->id }}">
+    @else
+        {{-- Case: Standalone DV --}}
+        <select id="payee" name="payee" class="w-full border rounded p-2">
+            <option value="">-- Search Payee --</option>
+            @foreach(\App\Models\Payee::all() as $p)
+                <option value="{{ $p->id }}" {{ old('payee') == $p->id ? 'selected' : '' }}>
+                    {{ $p->payee_name }}
+                </option>
+            @endforeach
+        </select>
+    @endif
+</div>
+
+
+
+
             </div>
 
             {{-- DETAIL FIELDS --}}
@@ -323,9 +344,45 @@
                 allowClear: true
             });
         });
+
+       document.addEventListener("DOMContentLoaded", function() {
+            new TomSelect("#payee", {
+                create: true, // allow typing a new payee if not in list
+                sortField: {
+                    field: "text",
+                    direction: "asc"
+                },
+                maxOptions: 1000, // increase search capacity
+            });
+        });
     </script>
     @endpush
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+@endpush
 
-    @push('styles')
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
-    @endpush
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // ✅ Only init Select2 for account-code-dropdowns
+            $('.account-code-dropdown').each(function () {
+                $(this).select2({
+                    placeholder: "Search account code...",
+                    allowClear: true,
+                    width: '100%'
+                });
+            });
+        });
+        document.addEventListener("DOMContentLoaded", function () {
+            if (document.querySelector("#payee")) {
+                new TomSelect("#payee", {
+                    create: true,
+                    sortField: { field: "text", direction: "asc" },
+                    maxOptions: 1000
+                });
+            }
+        });
+    </script>
+@endpush
