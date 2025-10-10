@@ -16,6 +16,13 @@
     @endif
 
     <div class="overflow-x-auto min-h-[350px]">
+          @if ($errors->has('fund_type'))
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">Error!</strong>
+                <span class="block sm:inline">{{ $errors->first('fund_type') }}</span>
+                
+                </div>
+        @endif
         <table class="w-full border border-gray-300">
             <thead class="bg-gray-200">
                 <tr>
