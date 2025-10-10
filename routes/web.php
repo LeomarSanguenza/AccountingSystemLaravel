@@ -77,6 +77,6 @@ Route::post('disbursements/{id}/reject', [DisbursementController::class, 'reject
     //Machine 2 vproblem route
 
 Route::get('/bottle-collector', [BottleCollectorController::class, 'index'])->name('bottle.collector.index');
-Route::post('/bottle-collector/calculate', [BottleCollectorController::class, 'calculate'])->name('bottle.collector.calculate');
+Route::post('/bottle-collector/calculate', [BottleCollectorController::class, 'calculate'])->name('bottlecollector.calculate');
 
 });

@@ -20,64 +20,150 @@ class DisbursementController extends Controller
     {
         $payees = \App\Models\Payee::all();
         $headers = DisbursementHeader::with('details', 'payeeRecord')->get();
+        // $user = auth()->user();
+        // $alias = $user->fundTypeRelation->alias;
+        // dd($alias);
         return view('disbursements.index', compact('headers'));
     }
 
-   public function create()
+public function create()
 {
     $accountCodes = AccountCode::all();
+    $user = auth()->user();
 
-    // no OBR context, make sure view receives these as null
+    [$dvPrefix, $nextNumber] = $this->getDvPrefixAndNextNumber($user);
+
+    // No OBR here, so set payee vars to null
     $bmsoPayee = null;
     $accountingPayee = null;
 
-    return view('disbursements.create', compact('accountCodes', 'bmsoPayee', 'accountingPayee'));
+    return view('disbursements.create', compact(
+        'accountCodes',
+        'bmsoPayee',
+        'accountingPayee',
+        'dvPrefix',
+        'nextNumber'
+    ));
 }
 
+private function getDvPrefixAndNextNumber($user)
+{
+    $alias = $user->fundTypeRelation->alias ?? '000';
+    $yearMonth = date('Y-m'); // e.g. "2025-10"
+    $prefix = "{$alias}-{$yearMonth}";
+
+    $latest = DisbursementHeader::where('dv_number', 'like', "{$prefix}-%")
+        ->orderBy('dv_number', 'desc')
+        ->first();
+
+    if ($latest && preg_match('/-(\d+)$/', $latest->dv_number, $m)) {
+        $nextNumber = intval($m[1]) + 1;
+    } else {
+        $nextNumber = 1;
+    }
+
+    return [$prefix, $nextNumber];
+}
 public function createFromObr($obrId)
 {
-    // Grab OBR with entries
     $obr = ObligationRequest::with('entries')->findOrFail($obrId);
     $accountCodes = AccountCode::all();
+    $user = auth()->user();
 
-    // bmso payee coming from the bmso DB
-<<<<<<< HEAD
-    $bmsoPayee = BmsoPayees::find($obr->payee_id);
-=======
-    $bmsoPayee = Payees::find($obr->payee_id);
->>>>>>> dcb86a6 (second commit)
-
-    // try to resolve corresponding accounting payee by ref_id
+    // Be consistent with model name — Payee vs Payees (see note below)
+    $bmsoPayee = Payees::find($obr->payee_id); // or Payee::find(...) if model name is singular
     $accountingPayee = Payee::where('ref_id', $bmsoPayee?->id)->first();
 
-    return view('disbursements.create', [
-        'obr' => $obr,
-        'accountCodes' => $accountCodes,
-        'bmsoPayee' => $bmsoPayee,
-        'accountingPayee' => $accountingPayee,
-    ]);
+    if ((int) $obr->fund_type_id !== (int) $user->fundtype) {
+        return redirect()->back()
+            ->withErrors(['fund_type' => 'This OBR does not belong to your fund type.']);
+    }
+
+    [$dvPrefix, $nextNumber] = $this->getDvPrefixAndNextNumber($user);
+
+    return view('disbursements.create', compact(
+        'obr',
+        'accountCodes',
+        'bmsoPayee',
+        'accountingPayee',
+        'dvPrefix',
+        'nextNumber'
+    ));
 }
 
-    public function store(Request $request)
-    {
 
-        DB::transaction(function () use ($request) {
+    // public function store(Request $request)
+    // {   
+    //     // $user = auth()->user();
+    //     // $alias = $user->fundTypeRelation->alias;
+    //     // dd($alias);
+        
 
-            $header = DisbursementHeader::create($request->only([
-                'date_of_voucher', 'mode_of_payment', 'fund_type',
-                'voucher_number', 'obligation_number', 'responsibility_center',
-                'fpp', 'payee', 'tin', 'address', 'date_of_check',
-                'bank', 'check_number', 'check_amount', 'date_of_or',
-                'or_document', 'jev_no', 'particulars', 'status', 'active'
-            ]));
+    //     DB::transaction(function () use ($request) {
 
-            foreach ($request->details as $detail) {
-                $header->details()->create($detail);
-            }
-        });
+    //         $header = DisbursementHeader::create($request->only([
+    //             'date_of_voucher', 'mode_of_payment', 'fund_type',
+    //             'voucher_number', 'obligation_number', 'responsibility_center',
+    //             'fpp', 'payee', 'tin', 'address', 'date_of_check',
+    //             'bank', 'check_number', 'check_amount', 'date_of_or',
+    //             'or_document', 'jev_no', 'particulars', 'status', 'active'
+    //         ]));
 
-        return redirect()->route('disbursements.index')->with('success', 'Disbursement created successfully!');
+    //         foreach ($request->details as $detail) {
+    //             $header->details()->create($detail);
+    //         }
+    //     });
+
+    //     return redirect()->route('disbursements.index')->with('success', 'Disbursement created successfully!');
+    // }
+public function store(Request $request)
+{   
+    $user = auth()->user();
+
+    // Get alias safely
+    $alias = $user->fundTypeRelation->alias ?? 'NA'; 
+
+    // Build full DV number from request
+    $dvNumber = $request->full_dv_number;
+
+    // 1️⃣ Validate that DV number is unique before continuing
+    if (DisbursementHeader::where('dv_number', $dvNumber)->exists()) {
+        return back()
+            ->withErrors(['dv_number' => 'That DV number is already taken.'])
+            ->withInput();
     }
+
+    // 2️⃣ Validate basic input (optional but smart)
+    $validated = $request->validate([
+        'date_of_voucher' => 'required|date',
+        'mode_of_payment' => 'required|string',
+        'fund_type' => 'required',
+        'payee' => 'required|string',
+        'details' => 'required|array|min:1',
+        'details.*.account_code' => 'required|string',
+        'details.*.amount' => 'required|numeric|min:0',
+    ]);
+
+    // 3️⃣ Wrap everything in a transaction
+    DB::transaction(function () use ($validated, $dvNumber) {
+
+        $header = DisbursementHeader::create(array_merge(
+            $validated,
+            ['dv_number' => $dvNumber]
+        ));
+
+        // Create detail rows
+        foreach ($validated['details'] as $detail) {
+            $header->details()->create($detail);
+        }
+    });
+
+    // 4️⃣ Redirect on success
+    return redirect()
+        ->route('disbursements.index')
+        ->with('success', "Disbursement {$dvNumber} created successfully!");
+}
+
 
     /**
      * Edit form

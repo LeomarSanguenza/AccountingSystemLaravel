@@ -26,41 +26,52 @@
 
                 <div>
                     <label class="block text-sm font-medium mb-1">Fund Type</label>
+                        
                         <input type="text" name="fund_type" class="w-full border rounded p-2"
                         value="{{ $obr->fund_type_id ?? '' }}">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium mb-1">DV Number</label>
-                    <input type="text" name="dv_number" class="w-full border rounded p-2">
+              
+                <div class="flex space-x-2 items-end">
+                    <!-- Locked Prefix -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1">DV Prefix</label>
+                        <input type="text" id="dv_prefix" class="w-full border rounded p-2 bg-gray-100" 
+                            value="{{ $dvPrefix ?? '' }}" readonly>
+                    </div>
+
+                    <!-- Editable Number -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1">DV Number</label>
+                        <input type="number" id="dv_number" name="dv_number" 
+                            class="w-full border rounded p-2" 
+                            value="{{ old('dv_number', $nextNumber ?? '') }}" 
+                            min="1">
+                    </div>
                 </div>
-
+                <input type="hidden" name="full_dv_number" id="full_dv_number">
                {{-- Payee field --}}
-<div class="col-span-2">
-    <label class="block text-sm font-medium mb-1">Payee</label>
+            <div class="col-span-2">
+                 <label class="block text-sm font-medium mb-1">Payee</label>
 
-    @if ($bmsoPayee) 
-        {{-- Case: From OBR, payee locked (readonly) --}}
-        <input type="text" class="w-full border rounded p-2 bg-gray-50"
-            value="{{ $accountingPayee?->payee_name ?? $bmsoPayee->name }}" readonly>
+                    @if ($bmsoPayee) 
+                        {{-- Case: From OBR, payee locked (readonly) --}}
+                        <input type="text" class="w-full border rounded p-2 bg-gray-50"
+                            value="{{ $accountingPayee?->payee_name ?? $bmsoPayee->name }}" readonly>
 
-        <input type="hidden" name="payee" value="{{ $accountingPayee?->id ?? '' }}">
-        <input type="hidden" name="bmso_payee_id" value="{{ $bmsoPayee->id }}">
-    @else
-        {{-- Case: Standalone DV --}}
-        <select id="payee" name="payee" class="w-full border rounded p-2">
-            <option value="">-- Search Payee --</option>
-            @foreach(\App\Models\Payee::all() as $p)
-                <option value="{{ $p->id }}" {{ old('payee') == $p->id ? 'selected' : '' }}>
-                    {{ $p->payee_name }}
-                </option>
-            @endforeach
-        </select>
-    @endif
-</div>
-
-
-
-
+                        <input type="hidden" name="payee" value="{{ $accountingPayee?->id ?? '' }}">
+                        <input type="hidden" name="bmso_payee_id" value="{{ $bmsoPayee->id }}">
+                    @else
+                        {{-- Case: Standalone DV --}}
+                        <select id="payee" name="payee" class="w-full border rounded p-2">
+                            <option value="">-- Search Payee --</option>
+                            @foreach(\App\Models\Payee::all() as $p)
+                                <option value="{{ $p->id }}" {{ old('payee') == $p->id ? 'selected' : '' }}>
+                                    {{ $p->payee_name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @endif
+                </div>
             </div>
 
             {{-- DETAIL FIELDS --}}
@@ -354,6 +365,19 @@
                 },
                 maxOptions: 1000, // increase search capacity
             });
+        });
+//dv number js
+        document.addEventListener('DOMContentLoaded', function () {
+            const prefixInput = document.getElementById('dv_prefix');
+            const numberInput = document.getElementById('dv_number');
+            const hiddenInput = document.getElementById('full_dv_number');
+
+            function updateFullDV() {
+                hiddenInput.value = `${prefixInput.value}-${numberInput.value.padStart(3, '0')}`;
+            }
+
+            numberInput.addEventListener('input', updateFullDV);
+            updateFullDV();
         });
     </script>
     @endpush

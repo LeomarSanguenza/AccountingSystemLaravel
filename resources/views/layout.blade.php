@@ -5,12 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@yield('title','Laravel App')</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  @vite('resources/css/app.css')
+  <link rel="stylesheet" href="{{ asset('css/app.css') }}"  >
+
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+{{-- <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval'"> --}}
 
   <!-- Select2 -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  {{-- <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> --}}
 
   <style>
     /* let hover temporarily expand collapsed sidebar */
@@ -146,6 +149,24 @@
             <span class="sidebar-label hidden">Journals</span>
         </a>
     </li>
+    {{-- <li>
+      <a href="{{ route('partsums.index') }}" 
+           class="flex items-center space-x-3 text-gray-700 hover:text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+            </svg>
+            <span class="sidebar-label hidden">Partsums</span>
+        </a>
+    </li>
+    <li>
+      <a href="{{ route('bottle.collector.index') }}" 
+           class="flex items-center space-x-3 text-gray-700 hover:text-blue-600">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+            </svg>
+            <span class="sidebar-label hidden">BottleCollector</span>
+        </a>
+    </li> --}}
   </ul>
 </nav>
 
