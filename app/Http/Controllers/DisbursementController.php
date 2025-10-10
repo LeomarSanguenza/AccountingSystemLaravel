@@ -7,8 +7,9 @@ use App\Models\DisbursementHeader;
 use App\Models\DisbursementDetail;
 use App\Models\AccountCode; // Assuming you have an AccountCode model
 use App\Models\Bmso\ObligationRequest;
+use App\Models\Bmso\Payees;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\Payee;
 
 class DisbursementController extends Controller
 {
@@ -40,7 +41,11 @@ public function createFromObr($obrId)
     $accountCodes = AccountCode::all();
 
     // bmso payee coming from the bmso DB
+<<<<<<< HEAD
     $bmsoPayee = BmsoPayees::find($obr->payee_id);
+=======
+    $bmsoPayee = Payees::find($obr->payee_id);
+>>>>>>> dcb86a6 (second commit)
 
     // try to resolve corresponding accounting payee by ref_id
     $accountingPayee = Payee::where('ref_id', $bmsoPayee?->id)->first();
