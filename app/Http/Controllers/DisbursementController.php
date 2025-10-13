@@ -21,7 +21,7 @@ class DisbursementController extends Controller
         $payees = \App\Models\Payee::all();
         $headers = DisbursementHeader::with('details', 'payeeRecord')->get();
         // $user = auth()->user();
-        // $alias = $user->fundTypeRelation->alias;
+        // $alias = auth()->user()->fundTypeRelation->code;
         // dd($alias);
         return view('disbursements.index', compact('headers'));
     }
