@@ -1,4 +1,7 @@
 /*! tailwindcss v4.1.14 | MIT License | https://tailwindcss.com */
+.select2-container--default .select2-selection--single {
+    @apply border border-gray-300 rounded-md h-10 px-2 !important;
+}
 @layer properties;
 @layer theme, base, components, utilities;
 @layer theme {
@@ -1694,3 +1697,4 @@
     }
   }
 }
+

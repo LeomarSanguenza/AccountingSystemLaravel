@@ -27,8 +27,8 @@
                 <div>
                     <label class="block text-sm font-medium mb-1">Fund Type</label>
                         
-                        <input type="text" name="fund_type" class="w-full border rounded p-2"
-                        value="{{ $obr->fund_type_id ?? '' }}">
+                        <input type="text" name="fund_type" class="w-64 border rounded p-2"
+                        value="{{ $obr->fund_type_id ?? auth()->user()->fundtypeRelation->code . "-" . auth()->user()->fundtypeRelation->description }}" @disabled(true)>
                 </div>
               
                 <div class="flex space-x-2 items-end">
@@ -74,7 +74,6 @@
                 </div>
             </div>
 
-            {{-- DETAIL FIELDS --}}
             {{-- DETAIL FIELDS --}}
             <h2 class="text-lg font-semibold mb-3">Disbursement Details</h2>
             <table class="w-full border-collapse mb-4" id="detailsTable">
