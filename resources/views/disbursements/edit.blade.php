@@ -1,223 +1,180 @@
-
 @extends('layout')
-
 @section('content')
-<div class="max-w-5xl mx-auto p-6">
-    <h2 class="text-2xl font-bold mb-4">Edit Disbursement Voucher</h2>
 
-    <form action="{{ route('disbursements.update', $header) }}" method="POST">
+<x-form-layout 
+    title="Edit Disbursement Voucher"
+    subtitle="Update disbursement voucher information"
+    :breadcrumbs="[
+        ['label' => 'Disbursements', 'url' => route('disbursements.index')],
+        ['label' => 'DV-' . $disbursement->dv_number, 'url' => route('disbursements.show', $disbursement->dv_hdr_id)],
+        ['label' => 'Edit']
+    ]"
+    max-width="max-w-7xl">
+    
+    <form action="{{ route('disbursements.update', $disbursement->dv_hdr_id) }}" method="POST" class="space-y-6">
         @csrf
         @method('PUT')
 
-        {{-- HEADER FIELDS --}}
-        <div class="grid grid-cols-2 gap-4 mb-6">
-            <div>
-                <label class="block font-medium">DV Number</label>
-                <input type="text" name="dv_no" value="{{ $header->dv_no }}" 
-                       class="w-full border rounded px-3 py-2">
+        {{-- HEADER SECTION --}}
+        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Voucher Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <x-form-field 
+                    label="Date of Voucher"
+                    name="date_of_voucher"
+                    type="date"
+                    :value="$disbursement->date_of_voucher"
+                    required />
+                
+                <x-form-field 
+                    label="Mode of Payment"
+                    name="mode_of_payment"
+                    type="select"
+                    :value="$disbursement->mode_of_payment"
+                    :options="[
+                        'Check' => 'Check',
+                        'Cash' => 'Cash', 
+                        'Others' => 'Others'
+                    ]"
+                    required />
             </div>
-            <div>
-                <label class="block font-medium">Date</label>
-                <input type="date" name="date_of_voucher" value="{{ $header->date_of_voucher }}" 
-                       class="w-full border rounded px-3 py-2">
+        </div>
+
+        {{-- FLEX HEADER ROW --}}
+        <div class="flex flex-wrap space-x-3 items-end w-full mb-6">
+            <!-- Fund Type -->
+            <div class="flex-shrink-0">
+                <label class="block text-sm font-medium mb-1">Fund Type</label>
+                <input type="text" name="fund_type" class="w-64 border rounded p-2"
+                    value="{{ $disbursement->fund_type ?? auth()->user()->fundtypeRelation->code . '-' . auth()->user()->fundtypeRelation->description }}"
+                    disabled>
             </div>
-            <div>
-                <label class="block font-medium">Payee</label>
-                <input type="text" name="payee" value="{{ $header->payee }}" 
-                       class="w-full border rounded px-3 py-2">
+
+            <!-- DV Prefix -->
+            <div class="flex-shrink-0">
+                <label class="block text-sm font-medium mb-1">DV Prefix</label>
+                <input type="text" id="dv_prefix" class="w-32 border rounded p-2 bg-gray-100"
+                    value="{{ $disbursement->dv_prefix }}" readonly>
             </div>
-            <div>
-                <label class="block font-medium">Status</label>
-                <select name="status" class="w-full border rounded px-3 py-2">
-                    <option {{ $header->status == 'Pending' ? 'selected' : '' }}>Pending</option>
-                    <option {{ $header->status == 'Approved' ? 'selected' : '' }}>Approved</option>
+
+            <!-- DV Number -->
+            <div class="flex-shrink-0">
+                <label class="block text-sm font-medium mb-1">DV Number</label>
+                <input type="number" id="dv_number" name="dv_number"
+                    class="w-24 border rounded p-2"
+                    value="{{ old('dv_number', $disbursement->dv_number) }}" min="1">
+            </div>
+
+            <!-- Payee -->
+            <div class="flex-1 min-w-[300px]">
+                <label class="block text-sm font-medium mb-1">Payee</label>
+                <select id="payee" name="payee" class="w-full border rounded p-2">
+                    <option value="">-- Search Payee --</option>
+                    @foreach(\App\Models\Payee::all() as $p)
+                        <option value="{{ $p->id }}" 
+                            {{ old('payee', $disbursement->payee_id) == $p->id ? 'selected' : '' }}>
+                            {{ $p->payee_name }}
+                        </option>
+                    @endforeach
                 </select>
             </div>
         </div>
 
-        {{-- DETAILS TABLE --}}
-        <h3 class="text-xl font-semibold mb-2">Entries</h3>
-        <table class="w-full border border-gray-300 mb-4" id="details-table">
-            <thead class="bg-gray-200">
-                <tr>
-                    <th class="p-2 border">Account Code</th>
-                    <th class="p-2 border">Sub Account</th>
-                    <th class="p-2 border">FPP</th>
-                    <th class="p-2 border">Debit</th>
-                    <th class="p-2 border">Credit</th>
-                    <th class="p-2 border">Action</th>
+        {{-- DETAIL FIELDS --}}
+        <h2 class="text-lg font-semibold mb-3">Disbursement Details</h2>
+        <table class="w-full border-collapse mb-4" id="detailsTable">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="border px-2 py-1">Account Code</th>
+                    <th class="border px-2 py-1">Sub Account</th>
+                    <th class="border px-2 py-1">Debit</th>
+                    <th class="border px-2 py-1">Credit</th>
+                    <th class="border px-2 py-1"></th>
                 </tr>
             </thead>
             <tbody>
-                @forelse ($header->details as $i => $detail)
+                @foreach ($disbursement->details as $i => $detail)
                     <tr>
                         <td class="border p-2">
-                            <select name="details[{{ $i }}][account_codes]" class="w-full border rounded px-2 py-1">
-                                @if(isset($detail->account_codes) && $detail->account_codes)
-                                    <option value="{{ $detail->account_codes }}" selected>
-                                        {{ $detail->account_codes }}
-                                    </option>
-                                @else
-                                    <option value="">-- Select Account Code --</option>
-                                @endif
-
+                            <select name="details[{{ $i }}][account_codes]" class="account-code-dropdown border p-1 w-full">
+                                <option value="">-- Select Account Code --</option>
                                 @foreach ($accountCodes as $code)
-                                    <option value="{{ $code->acct_code }}"
-                                        {{ (isset($detail->account_code) && $detail->account_code == $code->acct_code) ? 'selected' : '' }}>
+                                    <option value="{{ $code->full_code }}" 
+                                        {{ $detail->account_code === $code->full_code ? 'selected' : '' }}>
                                         {{ $code->full_code }} - {{ $code->description }}
                                     </option>
                                 @endforeach
                             </select>
                         </td>
-                        <td class="border p-2">
-                            <input type="text" name="details[{{ $i }}][sub_account]" 
-                                   value="{{ $detail->sub_account }}" 
-                                   class="w-full border rounded px-2 py-1">
-                        </td>
-                        <td class="border p-2">
-                            <input type="text" name="details[{{ $i }}][fpp]" 
-                                   value="{{ $detail->fpp }}" 
-                                   class="w-full border rounded px-2 py-1">
-                        </td>
-                        <td class="border p-2">
-                            <input type="number" step="0.01" name="details[{{ $i }}][debit]" 
-                                   value="{{ $detail->debit }}" 
-                                   class="w-full border rounded px-2 py-1">
-                        </td>
-                        <td class="border p-2">
-                            <input type="number" step="0.01" name="details[{{ $i }}][credit]" 
-                                   value="{{ $detail->credit }}" 
-                                   class="w-full border rounded px-2 py-1">
-                        </td>
-                        <td class="border p-2 text-center">
-                            <button type="button" class="bg-red-500 text-white px-2 py-1 rounded remove-row">X</button>
-                        </td>
+                        <td><input type="text" name="details[{{ $i }}][sub_account]" class="border p-1 w-full" value="{{ $detail->sub_account }}"></td>
+                        <td><input type="text" name="details[{{ $i }}][debit]" class="border p-1 w-full amount-field debit" value="{{ number_format($detail->debit, 2) }}"></td>
+                        <td><input type="text" name="details[{{ $i }}][credit]" class="border p-1 w-full amount-field credit" value="{{ number_format($detail->credit, 2) }}"></td>
+                        <td class="text-center"><button type="button" class="text-red-500 removeRow">✕</button></td>
                     </tr>
-                @empty
-                    {{-- If no details, load 2 empty rows --}}
-                    @for ($i = 0; $i < 2; $i++)
-                        <tr>
-                            <td class="border p-2">
-                                <select name="details[{{ $i }}][account_code]" class="w-full border rounded px-2 py-1">
-                                    <option value="{{ $code->full_code }}" 
-                                        {{ $detail->account_code == $code->full_code ? 'selected' : '' }}>
-                                        {{ $code->full_code }} - {{ $code->description }}
-                                    </option>
-                                    @foreach ($accountCodes as $code)
-                                        <option value="{{ $code->acct_code }}">
-                                            {{ $code->full_code }} - {{ $code->description }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </td>
-                            <td class="border p-2"><input type="text" name="details[{{ $i }}][sub_account]" class="w-full border rounded px-2 py-1"></td>
-                            <td class="border p-2"><input type="text" name="details[{{ $i }}][fpp]" class="w-full border rounded px-2 py-1"></td>
-                            <td class="border p-2"><input type="number" step="0.01" name="details[{{ $i }}][debit]" class="w-full border rounded px-2 py-1"></td>
-                            <td class="border p-2"><input type="number" step="0.01" name="details[{{ $i }}][credit]" class="w-full border rounded px-2 py-1"></td>
-                            <td class="border p-2 text-center">
-                                <button type="button" class="bg-red-500 text-white px-2 py-1 rounded remove-row">X</button>
-                            </td>
-                        </tr>
-                    @endfor
-                @endforelse
+                @endforeach
             </tbody>
-             <tfoot>
+
+            <tfoot>
                 <tr class="bg-gray-50 font-bold">
-                    <td colspan="2" class="text-left border px-2 py-1">TOTAL</td>
-                    <td class="border px-2 py-1 text-right" placeholder = "0.00" id="totalDebit"></td>
-                    <td class="border px-2 py-1 text-right" placeholder = "0.00" id="totalCredit"></td>
+                    <td colspan="2" class="text-right border px-2 py-1">TOTAL</td>
+                    <td class="border px-2 py-1 text-right" id="totalDebit">0.00</td>
+                    <td class="border px-2 py-1 text-right" id="totalCredit">0.00</td>
                     <td></td>
                 </tr>
             </tfoot>
         </table>
 
-        <button type="button" id="add-row" 
-                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-            + Add Row
-        </button>
+        <button type="button" id="addRow" class="bg-blue-500 text-white px-3 py-1 rounded">+ Add Row</button>
 
         <div class="mt-6">
-            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded">
-                Save Changes
-            </button>
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Update</button>
         </div>
     </form>
 </div>
 
-{{-- JS for dynamic rows --}}
+{{-- JS --}}
 <script>
-    document.getElementById('add-row').addEventListener('click', function () {
-        let table = document.querySelector('#details-table tbody');
-        let index = table.rows.length;
-        let row = `
-        <tr>
-            <td class="border p-2">
-                <select name="details[${index}][account_code]" class="w-full border rounded px-2 py-1">
-                    <option value="">-- Select Account Code --</option>
-                    @foreach ($accountCodes as $code)
-                        <option value="{{ $code->full_code }}">
-                            {{ $code->full_code }} - {{ $code->description }}
-                        </option>
-                    @endforeach
-                </select>
-            </td>
-            <td class="border p-2"><input type="text" name="details[${index}][sub_account]" class="w-full border rounded px-2 py-1"></td>
-            <td class="border p-2"><input type="text" name="details[${index}][fpp]" class="w-full border rounded px-2 py-1"></td>
-            <td class="border p-2"><input type="number" step="0.01" name="details[${index}][debit]" class="w-full border rounded px-2 py-1"></td>
-            <td class="border p-2"><input type="number" step="0.01" name="details[${index}][credit]" class="w-full border rounded px-2 py-1"></td>
-            <td class="border p-2 text-center">
-                <button type="button" class="bg-red-500 text-white px-2 py-1 rounded remove-row">X</button>
-            </td>
-        </tr>`;
-        table.insertAdjacentHTML('beforeend', row);
+    let rowCount = {{ $disbursement->details->count() }};
+
+    function initSelect2(element) {
+        $(element).select2({
+            placeholder: "Search account code...",
+            allowClear: true,
+            width: '100%'
+        });
+    }
+
+    $(document).ready(function() {
+        $('.account-code-dropdown').each(function() { initSelect2(this); });
+        $('#payee').select2({ placeholder: "Search Payee...", allowClear: true, width: '100%' });
     });
 
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-row')) {
-            e.target.closest('tr').remove();
-        }
+    // Add new row
+    $('#addRow').on('click', function() {
+        let table = $('#detailsTable tbody');
+        let newRow = $(`
+            <tr>
+                <td class="border p-2">
+                    <select name="details[${rowCount}][account_codes]" class="account-code-dropdown border p-1 w-full">
+                        <option value="">-- Select Account Code --</option>
+                        @foreach ($accountCodes as $code)
+                            <option value="{{ $code->full_code }}">{{ $code->full_code }} - {{ $code->description }}</option>
+                        @endforeach
+                    </select>
+                </td>
+                <td><input type="text" name="details[${rowCount}][sub_account]" class="border p-1 w-full"></td>
+                <td><input type="text" name="details[${rowCount}][debit]" class="border p-1 w-full amount-field debit" placeholder="0.00"></td>
+                <td><input type="text" name="details[${rowCount}][credit]" class="border p-1 w-full amount-field credit" placeholder="0.00"></td>
+                <td class="text-center"><button type="button" class="text-red-500 removeRow">✕</button></td>
+            </tr>
+        `);
+        table.append(newRow);
+        initSelect2(newRow.find('.account-code-dropdown'));
+        rowCount++;
     });
-
-    function calculateTotals() {
-        let totalDebit = 0, totalCredit = 0;
-        document.querySelectorAll('.debit').forEach(input => {
-            totalDebit += parseFloat(input.value) || 0;
-        });
-        document.querySelectorAll('.credit').forEach(input => {
-            totalCredit += parseFloat(input.value) || 0;
-        });
-        document.getElementById('totalDebit').innerText = totalDebit.toFixed(2);
-        document.getElementById('totalCredit').innerText = totalCredit.toFixed(2);
-    }
-    function formatAmountField(input) {
-        let value = input.value.replace(/,/g, ""); // strip commas
-
-        // Only digits + optional decimal
-        if (!/^\d*\.?\d*$/.test(value)) {
-            value = value.slice(0, -1);
-        }
-
-        // Split integer and decimal
-        let [integer, decimal] = value.split(".");
-
-        // Limit integer to 9 digits
-        if (integer && integer.length > 9) {
-            integer = integer.slice(0, 9);
-        }
-
-        // Add commas
-        if (integer) {
-            integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        // Max 2 decimals
-        if (decimal) {
-            decimal = decimal.slice(0, 2);
-            input.value = integer + "." + decimal;
-        } else {
-            input.value = integer;
-        }
-    }
-    
+    $(document).on('click', '.removeRow', function() {
+        $(this).closest('tr').remove();
+        calculateTotals();
+    });
 </script>
 @endsection

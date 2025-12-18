@@ -1,166 +1,167 @@
-{{-- resources/views/journal_headers/create.blade.php --}}
 @extends('layout')
 
 @section('content')
-<div class="max-w-6xl mx-auto bg-white shadow rounded-lg p-6">
-    <h1 class="text-2xl font-bold mb-6">Create Journal Entry</h1>
 
-    <form action="{{ route('journals.store') }}" method="POST">
+<x-form-layout 
+    title="Create Journal Entry"
+    subtitle="Create a new journal entry for accounting records"
+    :breadcrumbs="[
+        ['label' => 'Journals', 'url' => route('journals.index')],
+        ['label' => 'Create New']
+    ]"
+    max-width="max-w-6xl">
+    
+    <form action="{{ route('journals.store') }}" method="POST" class="space-y-6">
         @csrf
 
         {{-- Journal Header Section --}}
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <!-- 1 -->
-            <div>
-                <label class="block text-sm font-medium mb-1">Journal Entry No</label>
-                <input type="text" name="journal_entry_no" value="{{ old('journal_entry_no') }}"
-                       class="w-full border rounded px-3 py-2" required>
-            </div>
-
-            <!-- 2 -->
-            <div>
-                <label class="block text-sm font-medium mb-1">Voucher No</label>
-                <input type="text" name="voucher_no" value="{{ old('voucher_no') }}"
-                       class="w-full border rounded px-3 py-2">
-            </div>
-
-            <!-- 3 -->
-            <div>
-                <label class="block text-sm font-medium mb-1">Series</label>
-                <input type="text" name="series" value="{{ old('series') }}"
-                       class="w-full border rounded px-3 py-2">
-            </div>
-
-            <!-- 4 -->
-            <div>
-                <label class="block text-sm font-medium mb-1">Office</label>
-                <select name="office_id" class="w-full border rounded px-3 py-2">
-                    <option value="">-- Select Office --</option>
-                    @foreach($offices as $id => $name)
-                        <option value="{{ $id }}" {{ old('office_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- 5 -->
-            <div>
-                <label class="block text-sm font-medium mb-1">Expense Type</label>
-                <select name="expens_type" class="w-full border rounded px-3 py-2">
-                    <option value="">-- Select Expense Type --</option>
-                    @foreach($expenseTypes as $id => $name)
-                        <option value="{{ $id }}" {{ old('expens_type') == $id ? 'selected' : '' }}>{{ $name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- 6 -->
-            <div>
-                <label class="block text-sm font-medium mb-1">Entry Date</label>
-                <input type="date" name="entrydate" value="{{ old('entrydate') }}"
-                       class="w-full border rounded px-3 py-2">
-            </div>
-
-            <!-- 7 -->
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium mb-1">Particulars</label>
-                <input type="text" name="particulars" value="{{ old('particulars') }}"
-                       class="w-full border rounded px-3 py-2">
-            </div>
-
-            <!-- 8 Fund Type (show as disabled + hidden input if user has relation) -->
-            <div>
-                <label class="block text-sm font-medium mb-1">Fund Type</label>
-                @if(Auth::check() && Auth::user()->fundTypeRelation)
-                    <input type="text"
-                           class="w-full border rounded px-3 py-2 bg-gray-100 text-gray-700"
-                           value="{{ Auth::user()->fundTypeRelation->code }} - {{ Auth::user()->fundTypeRelation->description }}"
-                           disabled>
-                    <input type="hidden" name="fundtype"
-                           value="{{ Auth::user()->fundTypeRelation->code }}">
-                @else
-                    <input type="text" name="fundtype" value="{{ old('fundtype') }}"
-                           class="w-full border rounded px-3 py-2">
-                @endif
-            </div>
-
-            {{-- Journal Type + Check Number + Bank as one full-row block --}}
-            <div class="md:col-span-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-                    <!-- Journal Type -->
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Journal Type</label>
-                        <select id="journal_type" name="journal_type" class="w-full border rounded px-3 py-2">
-                            <option value="General" {{ old('journal_type') == 'General' ? 'selected' : '' }}>General</option>
-                            <option value="Check"   {{ old('journal_type') == 'Check'   ? 'selected' : '' }}>Check</option>
-                            <option value="Cash"    {{ old('journal_type') == 'Cash'    ? 'selected' : '' }}>Cash</option>
-                        </select>
-                    </div>
-
-                    <!-- Check Number (hidden unless Check selected) -->
-                    <div id="check_number_wrapper" class="hidden">
-                        <label class="block text-sm font-medium mb-1">Check Number</label>
-                        <input type="text" id="check_number" name="check_number"
-                               value="{{ old('check_number') }}"
-                               class="w-full border rounded px-3 py-2">
-                    </div>
-
-                    <!-- Bank (hidden unless Check selected) -->
-                    <div id="bank_wrapper" class="hidden">
-                        <label class="block text-sm font-medium mb-1">Bank</label>
-                        <input type="text" id="bank" name="bank" value="{{ old('bank') }}"
-                               class="w-full border rounded px-3 py-2">
-                    </div>
+        <div class="bg-gray-50 rounded-lg p-4 mb-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Journal Header Information</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <x-form-field 
+                    label="Journal Entry No"
+                    name="journal_entry_no"
+                    placeholder="Enter journal entry number"
+                    required />
+                
+                <x-form-field 
+                    label="Voucher No"
+                    name="voucher_no"
+                    placeholder="Enter voucher number" />
+                
+                <x-form-field 
+                    label="Series"
+                    name="series"
+                    placeholder="Enter series" />
+                
+                <x-form-field 
+                    label="Office"
+                    name="office_id"
+                    type="select"
+                    :options="$offices"
+                    placeholder="-- Select Office --" />
+                
+                <x-form-field 
+                    label="Expense Type"
+                    name="expens_type"
+                    type="select"
+                    :options="$expenseTypes"
+                    placeholder="-- Select Expense Type --" />
+                
+                <x-form-field 
+                    label="Entry Date"
+                    name="entrydate"
+                    type="date" />
+                
+                <div class="lg:col-span-2">
+                    <x-form-field 
+                        label="Particulars"
+                        name="particulars"
+                        placeholder="Enter particulars" />
                 </div>
             </div>
-        </div> {{-- end header grid --}}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                @if(Auth::check() && Auth::user()->fundTypeRelation)
+                    <x-form-field 
+                        label="Fund Type"
+                        name="fundtype_display"
+                        :value="Auth::user()->fundTypeRelation->code . ' - ' . Auth::user()->fundTypeRelation->description"
+                        disabled />
+                    <input type="hidden" name="fundtype" value="{{ Auth::user()->fundTypeRelation->code }}">
+                @else
+                    <x-form-field 
+                        label="Fund Type"
+                        name="fundtype"
+                        placeholder="Enter fund type" />
+                @endif
+                
+                <x-form-field 
+                    label="Journal Type"
+                    name="journal_type"
+                    type="select"
+                    :options="[
+                        'General' => 'General',
+                        'Check' => 'Check',
+                        'Cash' => 'Cash'
+                    ]"
+                    class="journal-type-select" />
+                
+                <x-form-field 
+                    label="Check Number"
+                    name="check_number"
+                    placeholder="Enter check number"
+                    container-class="check-field hidden" />
+                
+                <x-form-field 
+                    label="Bank"
+                    name="bank"
+                    placeholder="Enter bank"
+                    container-class="check-field hidden" />
+            </div>
+        </div>
 
         {{-- Journal Details Section --}}
-        <h2 class="text-xl font-semibold mb-3">Journal Details</h2>
-
-        <table class="w-full border rounded mb-4" id="details-table">
-            <thead class="bg-gray-100">
-                <tr>
-                    <th class="p-2 border">Account Code</th>
-                    <th class="p-2 border">Explanation</th>
-                    <th class="p-2 border">Debit</th>
-                    <th class="p-2 border">Credit</th>
-                    <th class="p-2 border">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="p-2 border">
-                        <select name="details[0][account_code]" class="w-full border rounded px-2 py-1">
-                            <option value="">-- Select Account Code --</option>
-                            @foreach ($accounts as $code => $desc)
-                                <option value="{{ $code }}">{{ $code }} - {{ $desc }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                    <td class="p-2 border">
-                        <input type="text" name="details[0][explaination]" class="w-full border rounded px-2 py-1">
-                    </td>
-                    <td class="p-2 border">
-                        <input type="number" step="0.01" name="details[0][debit_amount]" class="w-full border rounded px-2 py-1">
-                    </td>
-                    <td class="p-2 border">
-                        <input type="number" step="0.01" name="details[0][credit_amount]" class="w-full border rounded px-2 py-1">
-                    </td>
-                    <td class="p-2 border text-center">
-                        <button type="button" class="text-red-500 hover:underline remove-row">✕</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-
-        <button type="button" id="add-row" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 hover:bg-blue-600">+ Add Row</button>
-
-        <div class="flex justify-end space-x-3">
-            <a href="{{ route('journals.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancel</a>
-            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Save</button>
+        <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <div class="px-4 py-3 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-semibold text-gray-900">Journal Details</h3>
+                <button type="button" id="add-row" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Add Row
+                </button>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="w-full" id="details-table">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Account Code</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Explanation</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Debit</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">Credit</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200 w-16">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 border-b border-gray-200">
+                                <select name="details[0][account_code]" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <option value="">-- Select Account Code --</option>
+                                    @foreach ($accounts as $code => $desc)
+                                        <option value="{{ $code }}">{{ $code }} - {{ $desc }}</option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            <td class="px-4 py-3 border-b border-gray-200">
+                                <input type="text" name="details[0][explaination]" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Enter explanation">
+                            </td>
+                            <td class="px-4 py-3 border-b border-gray-200">
+                                <input type="number" step="0.01" name="details[0][debit_amount]" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-right" placeholder="0.00">
+                            </td>
+                            <td class="px-4 py-3 border-b border-gray-200">
+                                <input type="number" step="0.01" name="details[0][credit_amount]" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-right" placeholder="0.00">
+                            </td>
+                            <td class="px-4 py-3 border-b border-gray-200 text-center">
+                                <button type="button" class="text-red-600 hover:text-red-800 remove-row p-1 rounded-md hover:bg-red-50 transition-colors duration-200">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
+
+        <x-form-actions 
+            submit-text="Create Journal Entry"
+            :cancel-url="route('journals.index')" />
     </form>
-</div>
+</x-form-layout>
 
 <script>
     // dynamic rows
@@ -202,27 +203,26 @@
     });
 
     // toggle check fields
-    (function () {
-        const journalType = document.getElementById('journal_type');
-        const checkNumberWrapper = document.getElementById('check_number_wrapper');
-        const bankWrapper = document.getElementById('bank_wrapper');
-        const checkNumberInput = document.getElementById('check_number');
-        const bankInput = document.getElementById('bank');
-
-        if (!journalType) return;
+    document.addEventListener('DOMContentLoaded', function() {
+        const journalTypeSelect = document.querySelector('select[name="journal_type"]');
+        const checkFields = document.querySelectorAll('.check-field');
+        const checkNumberInput = document.querySelector('input[name="check_number"]');
+        const bankInput = document.querySelector('input[name="bank"]');
 
         function toggleCheckFields() {
-            const show = journalType.value === 'Check';
-            checkNumberWrapper.classList.toggle('hidden', !show);
-            bankWrapper.classList.toggle('hidden', !show);
+            const show = journalTypeSelect.value === 'Check';
+            checkFields.forEach(field => {
+                field.classList.toggle('hidden', !show);
+            });
 
             if (checkNumberInput) checkNumberInput.required = show;
             if (bankInput) bankInput.required = show;
         }
 
-        // run on load and on change
-        document.addEventListener('DOMContentLoaded', toggleCheckFields);
-        journalType.addEventListener('change', toggleCheckFields);
-    })();
+        if (journalTypeSelect) {
+            toggleCheckFields(); // run on load
+            journalTypeSelect.addEventListener('change', toggleCheckFields);
+        }
+    });
 </script>
 @endsection

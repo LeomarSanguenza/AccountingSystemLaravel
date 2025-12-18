@@ -10,6 +10,7 @@ use App\Models\Bmso\ObligationRequest;
 use App\Models\Bmso\Payees;
 use Illuminate\Support\Facades\DB;
 use App\Models\Payee;
+use App\Models\Fundtype;
 
 class DisbursementController extends Controller
 {
@@ -28,6 +29,7 @@ class DisbursementController extends Controller
 
 public function create()
 {
+    // dd('Controller method reached!'); // Add this line
     $accountCodes = AccountCode::all();
     $user = auth()->user();
 
@@ -168,13 +170,23 @@ public function store(Request $request)
     /**
      * Edit form
      */
+    // public function edit($id)
+    // {
+    //     $accountCodes = AccountCode::all();
+    //     $header = DisbursementHeader::with('details')->findOrFail($id);
+    //     // dd($header);
+    //     return view('disbursements.edit', compact('header', 'accountCodes'));
+    // }
     public function edit($id)
-    {
-        $accountCodes = AccountCode::all();
-        $header = DisbursementHeader::with('details')->findOrFail($id);
-        // dd($header);
-        return view('disbursements.edit', compact('header', 'accountCodes'));
-    }
+{
+    $disbursement = DisbursementHeader::findOrFail($id); // fetch the record
+    $accountCodes = AccountCode::all(); // assuming you use this in the form
+    $bmsoPayee = null; // or fetch whatever you need
+    $accountingPayee = null; // same here
+
+    return view('disbursements.edit', compact('disbursement', 'accountCodes', 'bmsoPayee', 'accountingPayee'));
+}
+
 public function approve($id)
 {
     $this->authorize('approve_disbursement');
@@ -251,6 +263,15 @@ public function statusInfo()
         });
 
         return redirect()->route('disbursements.index')->with('success', 'Disbursement updated successfully!');
+    }
+
+    /**
+     * Show single disbursement
+     */
+    public function show($id)
+    {
+        $disbursement = DisbursementHeader::with('details')->findOrFail($id);
+        return view('disbursements.show', compact('disbursement'));
     }
 
     /**

@@ -10,12 +10,12 @@ class OfficeController extends Controller
     public function index()
     {
         $offices = Office::all();
-        return view('offices.index', compact('offices'));
+        return view('Tools.offices.index', compact('offices'));
     }
 
     public function create()
     {
-        return view('offices.create');
+        return view('Tools.offices.create');
     }
 
     public function store(Request $request)
@@ -27,12 +27,12 @@ class OfficeController extends Controller
 
         Office::create($request->all());
 
-        return redirect()->route('offices.index')->with('success', 'Office created successfully.');
+        return redirect()->route('tools.offices.index')->with('success', 'Office created successfully.');
     }
 
     public function edit(Office $office)
     {
-        return view('offices.edit', compact('office'));
+        return view('Tools.offices.edit', compact('office'));
     }
 
     public function update(Request $request, Office $office)
@@ -44,12 +44,12 @@ class OfficeController extends Controller
 
         $office->update($request->all());
 
-        return redirect()->route('offices.index')->with('success', 'Office updated successfully.');
+        return redirect()->route('tools.offices.index')->with('success', 'Office updated successfully.');
     }
 
     public function destroy(Office $office)
     {
         $office->delete();
-        return redirect()->route('offices.index')->with('success', 'Office deleted successfully.');
+        return redirect()->route('tools.offices.index')->with('success', 'Office deleted successfully.');
     }
 }

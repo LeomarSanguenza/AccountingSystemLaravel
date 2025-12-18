@@ -43,7 +43,7 @@ return [
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
 
-        'bmso' => [
+        'navotas_bms' => [
         'driver' => env('BMSO_DB_CONNECTION', 'mysql'),
         'host' => env('BMSO_DB_HOST', '127.0.0.1'),
         'port' => env('BMSO_DB_PORT', '3306'),

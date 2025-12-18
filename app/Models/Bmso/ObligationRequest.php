@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ObligationRequest extends Model
 {
-    protected $connection = 'bmso';   // Use secondary DB
+    protected $connection = 'navotas_bms';   // Use secondary DB
     protected $table = 'obligation_requests';
     protected $primaryKey = 'id';     // adjust if your PK is different
 

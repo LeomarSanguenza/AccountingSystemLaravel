@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Employee;
-use App\Models\FundType;
+use App\Models\LocalFundType;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -20,7 +20,7 @@ class UserController extends Controller
 
     public function create(Request $request) {
         $employee = null;
-        $fundtypes = FundType::all();
+        $fundtypes = LocalFundType::all();
 
         if ($request->filled('EmpID')) {
             $employee = Employee::find($request->EmpID);
@@ -76,7 +76,7 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        $fundtypes = FundType::all();
+        $fundtypes = LocalFundType::all();
         return view('User.edit', compact('user', 'fundtypes'));
     }
 
@@ -171,7 +171,7 @@ class UserController extends Controller
     public function editFundType($id)
     {
         $user = User::findOrFail($id);
-        $fundtypes = FundType::all();
+        $fundtypes = LocalFundType::all();
 
         return view('user.change-fundtype', compact('user', 'fundtypes'));
     }

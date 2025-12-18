@@ -10,7 +10,7 @@ class FundType extends Model
     use HasFactory;
 
     // Tell Laravel the table name (with bmso schema)
-    protected $table = 'bmso.fund_types';
+    protected $table = 'navotas_bms.fund_types';
 
     // Set primary key
     protected $primaryKey = 'id';
