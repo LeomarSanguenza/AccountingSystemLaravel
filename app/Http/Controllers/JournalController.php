@@ -25,7 +25,7 @@ class JournalController extends Controller
     public function create()
     {
         $expenseTypes = ExpenseType::pluck('name', 'id');
-        $fundTypes    = FundType::pluck('description', 'id');
+        $fundTypes    = DB::connection('mysql')->table('fund_types')->pluck('description', 'id');
         $payees       = Payee::pluck('payee_name', 'id');
         $tags         = Tag::pluck('description', 'tags_id');
         $accounts     = AccountCode::pluck('description', 'full_code');
@@ -81,6 +81,12 @@ class JournalController extends Controller
         });
 
         return redirect()->route('journals.index')->with('success', 'Journal updated successfully!');
+    }
+
+    public function show($id)
+    {
+        $journal = JournalHeader::with('details')->findOrFail($id);
+        return view('journals.show', compact('journal'));
     }
 
     public function destroy($id)

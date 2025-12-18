@@ -12,7 +12,7 @@ class Tag extends Model
 
     public function fundTypeRelation()
     {
-        return $this->belongsTo(FundType::class, 'fundtype', 'id');
+        return $this->belongsTo(LocalFundType::class, 'fundtype', 'id');
     }
 }
     

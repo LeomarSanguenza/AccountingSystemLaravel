@@ -10,12 +10,12 @@ class BarangayController extends Controller
     public function index()
     {
         $barangays = Barangay::all();
-        return view('tools.barangays.index', compact('barangays'));
+        return view('Tools.barangay.index', compact('barangays'));
     }
 
     public function create()
     {
-        return view('tools.barangays.create');
+        return view('Tools.barangay.create');
     }
 
     public function store(Request $request)
@@ -32,7 +32,7 @@ class BarangayController extends Controller
 
     public function edit(Barangay $barangay)
     {
-        return view('tools.barangays.edit', compact('barangay'));
+        return view('Tools.barangay.edit', compact('barangay'));
     }
 
     public function update(Request $request, Barangay $barangay)

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; // Using Auth for login/logout
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\UserActivityLog;
 
 class LoginController extends Controller
 {
@@ -32,7 +33,19 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             // Regenerate the session to prevent fixation
             $request->session()->regenerate();
-            return redirect()->intended('employee')->with('success', 'Logged in successfully.');
+            
+            // Log successful login
+            UserActivityLog::logActivity(
+                Auth::user()->UserID,
+                'login',
+                'system',
+                'User logged into the system',
+                ['username' => $credentials['username']],
+                $request->fullUrl(),
+                'POST'
+            );
+            
+            return redirect()->intended('dashboard')->with('success', 'Logged in successfully.');
         }
 
         // Authentication failed: redirect back with error
@@ -46,6 +59,21 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
+        $user = Auth::user();
+        
+        // Log logout before actually logging out
+        if ($user) {
+            UserActivityLog::logActivity(
+                $user->UserID,
+                'logout',
+                'system',
+                'User logged out of the system',
+                [],
+                $request->fullUrl(),
+                'POST'
+            );
+        }
+        
         Auth::logout();
         // Invalidate the session
         $request->session()->invalidate();

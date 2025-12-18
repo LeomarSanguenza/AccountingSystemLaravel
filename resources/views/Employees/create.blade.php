@@ -1,70 +1,75 @@
 @extends('layout')
 
 @section('content')
-<div class="max-w-lg mx-auto bg-white shadow-md rounded-lg p-6">
-    <h2 class="text-2xl font-semibold mb-6">Add Employee</h2>
+
+<x-form-layout 
+    title="Add New Employee"
+    subtitle="Create a new employee record"
+    :breadcrumbs="[
+        ['label' => 'Employees', 'url' => route('employees.index')],
+        ['label' => 'Create New']
+    ]">
     
-    <form action="{{ route('employees.store') }}" method="POST" class="space-y-4">
+    <form action="{{ route('employees.store') }}" method="POST" class="space-y-6">
         @csrf
-
-        <!-- First Name -->
-        <div>
-            <label for="FirstName" class="block text-sm font-medium text-gray-700">First Name</label>
-            <input type="text" name="FirstName" id="FirstName"
-                class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
-                required>
+        
+        <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Personal Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <x-form-field 
+                    label="First Name"
+                    name="FirstName"
+                    placeholder="Enter first name"
+                    required />
+                
+                <x-form-field 
+                    label="Last Name"
+                    name="LastName"
+                    placeholder="Enter last name"
+                    required />
+                
+                <x-form-field 
+                    label="Gender"
+                    name="Gender"
+                    type="select"
+                    :options="[
+                        'Male' => 'Male',
+                        'Female' => 'Female',
+                        'Other' => 'Other'
+                    ]"
+                    required />
+                
+                <x-form-field 
+                    label="Birthdate"
+                    name="Birthdate"
+                    type="date"
+                    required />
+            </div>
+        </div>
+        
+        <div class="bg-gray-50 rounded-lg p-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Employment Information</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <x-form-field 
+                    label="Position"
+                    name="Position"
+                    placeholder="Enter position/job title"
+                    required />
+                
+                <x-form-field 
+                    label="Salary"
+                    name="Salary"
+                    type="number"
+                    placeholder="Enter salary amount"
+                    help="Enter monthly salary amount"
+                    required />
+            </div>
         </div>
 
-        <!-- Last Name -->
-        <div>
-            <label for="LastName" class="block text-sm font-medium text-gray-700">Last Name</label>
-            <input type="text" name="LastName" id="LastName"
-                class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
-                required>
-        </div>
-
-        <!-- Position -->
-        <div>
-            <label for="Position" class="block text-sm font-medium text-gray-700">Position</label>
-            <input type="text" name="Position" id="Position"
-                class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
-                required>
-        </div>
-
-        <!-- Salary -->
-        <div>
-            <label for="Salary" class="block text-sm font-medium text-gray-700">Salary</label>
-            <input type="number" name="Salary" id="Salary"
-                class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
-                required>
-        </div>
-
-        <!-- Gender -->
-        <div>
-            <label for="Gender" class="block text-sm font-medium text-gray-700">Gender</label>
-            <select name="Gender" id="Gender"
-                class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-            </select>
-        </div>
-
-        <!-- Birthdate -->
-        <div>
-            <label for="Birthdate" class="block text-sm font-medium text-gray-700">Birthdate</label>
-            <input type="date" name="Birthdate" id="Birthdate"
-                class="mt-1 block w-full border border-gray-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500"
-                required>
-        </div>
-
-        <!-- Submit -->
-        <div>
-            <button type="submit"
-                class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition">
-                Save
-            </button>
-        </div>
+        <x-form-actions 
+            submit-text="Create Employee"
+            :cancel-url="route('employees.index')" />
     </form>
-</div>
+</x-form-layout>
+
 @endsection

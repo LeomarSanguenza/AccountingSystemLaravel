@@ -1,71 +1,70 @@
 @extends('layout')
 
 @section('content')
-<div class="max-w-xl mx-auto mt-10 bg-white p-6 rounded-xl shadow-md">
-    <h2 class="text-2xl font-semibold mb-6 text-gray-800">Add Users</h2>
+
+<x-form-layout 
+    title="Add New User"
+    subtitle="Create a new user account with role and fund type assignment"
+    :breadcrumbs="[
+        ['label' => 'Users', 'url' => route('user.index')],
+        ['label' => 'Create New']
+    ]">
     
-    <form action="{{ route('users.store') }}" method="POST" class="space-y-4">
+    <form action="{{ route('users.store') }}" method="POST" class="space-y-6">
         @csrf
-
-        <div>
-            <label for="FirstName" class="block text-sm font-medium text-gray-700">First Name</label>
-            <input type="text" name="FirstName" id="FirstName" 
-                   class="mt-1 block w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
-                   required>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <x-form-field 
+                label="First Name"
+                name="FirstName"
+                placeholder="Enter first name"
+                required />
+            
+            <x-form-field 
+                label="Last Name"
+                name="LastName"
+                placeholder="Enter last name"
+                required />
+            
+            <x-form-field 
+                label="Username"
+                name="Username"
+                placeholder="Enter username"
+                help="Username must be unique"
+                required />
+            
+            <x-form-field 
+                label="Password"
+                name="Password"
+                type="password"
+                placeholder="Enter password"
+                help="Minimum 8 characters recommended"
+                required />
+            
+            <x-form-field 
+                label="User Role"
+                name="UserRole"
+                type="select"
+                :options="[
+                    'Admin' => 'Admin',
+                    'SystemController' => 'System Controller',
+                    'Employee' => 'Employee'
+                ]"
+                required />
+            
+            <x-form-field 
+                label="Fund Type"
+                name="fund_type"
+                type="select"
+                :options="$fundtypes->pluck('description', 'id')->toArray()"
+                placeholder="-- Select Fund Type --"
+                required />
         </div>
 
-        <div>
-            <label for="LastName" class="block text-sm font-medium text-gray-700">Last Name</label>
-            <input type="text" name="LastName" id="LastName" 
-                   class="mt-1 block w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
-                   required>
-        </div>
-
-        <div>
-            <label for="Username" class="block text-sm font-medium text-gray-700">Username</label>
-            <input type="text" name="Username" id="Username" 
-                   class="mt-1 block w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
-                   required>
-        </div>
-
-        <div>
-            <label for="Password" class="block text-sm font-medium text-gray-700">Password</label>
-            <input type="password" name="Password" id="Password" 
-                   class="mt-1 block w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
-                   required>
-        </div>
-
-      <div class="flex space-x-4">
-        <div class="w-1/2">
-            <label for="UserRole" class="block text-sm font-medium text-gray-700">User Role</label>
-            <select name="UserRole" id="UserRole" 
-                    class="mt-1 block w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-                <option value="Admin">Admin</option>
-                <option value="SystemController">System Controller</option>
-                <option value="Employee">Employee</option>
-            </select>
-        </div>
-
-        <div class="w-1/2">
-            <label for="fund_type" class="block text-sm font-medium text-gray-700">Fund Type</label>
-                <select name="fund_type" id="fund_type" 
-                        class="mt-1 block w-full rounded-lg border border-gray-300 p-2 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" 
-                        required>
-                    <option value="">-- Select Fund Type --</option>
-                    @foreach($fundtypes as $fund)
-                        <option value="{{ $fund->id }}">{{ $fund->description }}</option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-
-
-        <div>
-            <button type="submit" 
-                    class="w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow hover:bg-indigo-700 transition">
-                Save
-            </button>
-        </div>
+        <x-form-actions 
+            submit-text="Create User"
+            :cancel-url="route('user.index')" />
     </form>
-</div>
+</x-form-layout>
+
 @endsection
